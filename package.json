@@ -1,0 +1,30 @@
+{
+  "name": "test-backend-tandem",
+  "version": "1.0.0",
+  "description": "Test para evaluar la capacidad para diseñar y desarrollar un back-end",
+  "main": "index.js",
+  "scripts": {
+    "start:prod": "node index.js",
+    "start:dev": "nodemon -L"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AngelGuillermoMontania/test-backend-tandem.git"
+  },
+  "author": "Angel Guillermo Montaña",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AngelGuillermoMontania/test-backend-tandem/issues"
+  },
+  "homepage": "https://github.com/AngelGuillermoMontania/test-backend-tandem#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "helmet": "^6.0.1",
+    "morgan": "^1.10.0",
+    "mssql": "^9.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
