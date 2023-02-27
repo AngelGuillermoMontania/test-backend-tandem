@@ -4,13 +4,13 @@ const sql = require("mssql")
 const dbConfig = {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    server: "localhost",
+    server: process.env.DB_SERVER,
     database: process.env.DB_NAME,
     options: {
         encrypt: true, // for azure
         trustServerCertificate: true // change to true for local dev / self-signed certs
     },
-    port: Number(process.env.DB_PORT) && 1433
+    port: Number(process.env.DB_PORT) || 1433
 }
 
 const getConnection = async () => {
@@ -22,4 +22,7 @@ const getConnection = async () => {
     }
 }
 
-module.exports = getConnection
+module.exports = {
+    getConnection,
+    sql
+}

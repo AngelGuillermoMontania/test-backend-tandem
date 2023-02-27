@@ -1,6 +1,9 @@
-const express = require('express');
-const morgan = require('morgan');
+const express = require("express");
+const morgan = require("morgan");
 const helmet = require("helmet");
+
+const indexRouter = require("./routes/indexRouter")
+const userRouter = require("./routes/userRouter")
 
 const server = express();
 
@@ -9,6 +12,10 @@ server.use(express.urlencoded({ extended: true }));
 server.use(express.json({ limit: '50mb' }));
 server.use(morgan('dev'))
 server.use(helmet())
+
+// Routes
+server.use("/", indexRouter)
+server.use("/user", userRouter)
 
 // Error catching endware.
 server.use((err, req, res, next) => { 
