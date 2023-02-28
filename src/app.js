@@ -9,8 +9,8 @@ const server = express();
 
 // Middlewares
 server.use(express.urlencoded({ extended: true }));
-server.use(express.json({ limit: '50mb' }));
-server.use(morgan('dev'))
+server.use(express.json({ limit: "50mb" }));
+server.use(morgan("dev"))
 server.use(helmet())
 
 // Routes

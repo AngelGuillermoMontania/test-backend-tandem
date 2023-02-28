@@ -18,7 +18,7 @@ const getConnection = async () => {
         const pool = await sql.connect(dbConfig)
         return pool
     } catch (error) {
-        console.error('Error creating connection pool', error)
+        console.error("Error creating connection pool", error)
     }
 }
 
