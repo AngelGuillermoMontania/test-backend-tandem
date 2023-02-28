@@ -18,7 +18,7 @@ server.use("/", indexRouter)
 server.use("/user", userRouter)
 
 // Error catching endware.
-server.use((err, req, res, next) => { 
+server.use((err, req, res, next) => {
     const status = err.status || 500;
     const message = err.message || err;
     console.error(err);

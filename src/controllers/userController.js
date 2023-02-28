@@ -1,6 +1,7 @@
 const { getConnection, sql } = require("../database/connection");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
     userLogin: async (req, res) => {
@@ -8,7 +9,33 @@ module.exports = {
         const errors = validationResult(req);  // I am requesting express-validator errors
 
         if (errors.isEmpty()) {   //isEmpty() will return a boolean if errors are empty
-            res.send("OK")
+            try {
+                let isValid = false
+                const pool = await getConnection()
+                const result = await pool.request()
+                    .input("usuario", sql.NVarChar, req.body.usuario)
+                    .query("SELECT * FROM USUARIOS WHERE usuario = @usuario")
+
+                // forEach and the select * since the "user" field is not unique. It may not be the first one you find
+                // I would consider applying constraint unique in the user field or login with email, to avoid this behavior and future problems.
+                result.recordset.forEach(user => {
+                    if (bcrypt.compareSync(req.body.password, user.password)) {
+                        isValid = true
+                        const token = jwt.sign({
+                            id: user.id,
+                            usuario: user.usuario
+                        }, process.env.JWT_SECRET, { expiresIn: "24h" })
+                        res.status(200).json({
+                            token
+                        })
+                    }
+                });
+                if (!isValid) {
+                    res.status(400).send("User and password do not match")
+                }
+            } catch (error) {
+                res.status(500).send(error.message)
+            }
         } else {
             res.status(400).json({
                 errors: { ...errors.mapped() }
