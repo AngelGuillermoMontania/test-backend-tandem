@@ -1,25 +1,29 @@
 const { check, body, validationResult } = require("express-validator");
-const { getConnection, sql } = require("../database/connection")
-const bcrypt = require("bcrypt");
 
 module.exports = [
     check("nombreYApellido").trim()
         .notEmpty()
         .withMessage("User cannot be empty")
         .isString()
-        .withMessage("The type must be string"),
+        .withMessage("The type must be string")
+        .isLength({ min: 5 })
+        .withMessage("Minimum 5 characters"),
 
     check("usuario").trim()
         .notEmpty()
         .withMessage("User cannot be empty")
         .isString()
-        .withMessage("The type must be string"),
+        .withMessage("The type must be string")
+        .isLength({ min: 2 })
+        .withMessage("Minimum 2 characters"),
 
     check("password").trim()
         .notEmpty()
         .withMessage("Password cannot be empty")
         .isString()
-        .withMessage("The type must be string"),
+        .withMessage("The type must be string")
+        .isLength({ min: 2 })
+        .withMessage("Minimum 2 characters"),
 
     check("email").trim()
         .notEmpty()
@@ -35,7 +39,6 @@ module.exports = [
         .isNumeric()
         .withMessage("The type must be number")
         .custom((value, { req }) => {
-            console.log(req.body.telefono)
             if (value < 2147483647 && value > -2147483647) {
                 return true;
             }
@@ -48,7 +51,6 @@ module.exports = [
         .isNumeric()
         .withMessage("The type must be number")
         .custom((value, { req }) => {
-            console.log(req.body.telefono)
             if (value < 100000000 && value > 5000000) {
                 return true;
             }
