@@ -36,3 +36,5 @@ JWT_SECRET="tandem"
 4. Instalar las dependencias necesarias ejecutando el comando `npm install` en la raiz del proyecto.
 5. Escribir el comando `npm run start:dev` en el directorio raiz para iniciar el proyecto en modo desarrollador
 6. LISTO!
+
+EN EL SCRIPT YA VIENE CONFIGURADO UN USUARIO CON USUARIO: admin CON CONTRASEÑA admin
