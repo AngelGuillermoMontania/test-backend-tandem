@@ -1,6 +1,5 @@
 const { getConnection, sql } = require("../database/connection");
 const { validationResult } = require("express-validator");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 module.exports = {
@@ -19,7 +18,7 @@ module.exports = {
                 // forEach and the select * since the "user" field is not unique. It may not be the first one you find
                 // I would consider applying constraint unique in the user field or login with email, to avoid this behavior and future problems.
                 result.recordset.forEach(user => {
-                    if (bcrypt.compareSync(req.body.password, user.password)) {
+                    if (req.body.password === user.password) {
                         isValid = true
                         const token = jwt.sign({
                             id: user.id,
@@ -38,7 +37,7 @@ module.exports = {
             }
         } else {
             res.status(400).json({
-                errors: { ...errors.mapped() }
+                errors: { ...errors.mapped() } // Send errors
             })
         }
     },
@@ -46,13 +45,13 @@ module.exports = {
         try {
             const pool = await getConnection()
             const result = await pool.request().query("SELECT * FROM USUARIOS")
+            result.recordset.shift()  // Do not send admin user
             res.status(200).json(result.recordset)
         } catch (error) {
             res.status(500).send(error.message || error)
         }
     },
     createUser: async (req, res) => {
-
         const { nombreYApellido, usuario, password, email, telefono, dni } = req.body
         const errors = validationResult(req);
 
@@ -62,7 +61,9 @@ module.exports = {
                 const result = await pool.request()
                     .input("nombreYApellido", sql.NVarChar, nombreYApellido)
                     .input("usuario", sql.NVarChar, usuario)
-                    .input("password", sql.NVarChar, bcrypt.hashSync(password, 10))
+                    .input("password", sql.NVarChar, password)  
+                    /* I would recommend for security reasons to save the password with the use of bcrypt or similar. 
+                    In this case I have to show the password on the front end, which prevents its use. */
                     .input("email", sql.NVarChar, email)
                     .input("telefono", sql.Int, telefono)
                     .input("dni", sql.Int, dni)
@@ -77,11 +78,29 @@ module.exports = {
             })
         }
     },
+    getOneUser: async (req, res) => {
+
+        const { id } = req.params
+
+        try {
+            const pool = await getConnection()
+            const result = await pool.request()
+            .input("id", id)
+            .query("SELECT * FROM USUARIOS WHERE id = @id")
+            if(result.recordset[0] === undefined) {
+                res.status(400).send(`The resource could not be edited. Check the user id ${id}`)
+            } else {
+                res.status(200).json(result.recordset[0])
+            }
+        } catch (error) {
+            res.status(500).send(error.message || error)
+        }
+    },
     editUser: async (req, res) => {
 
         const { nombreYApellido, usuario, password, email, telefono } = req.body
-        const { id } = req.params
         const errors = validationResult(req);
+        const { id } = req.params
 
         if (errors.isEmpty()) {
             try {
@@ -90,7 +109,7 @@ module.exports = {
                     .input("id", id)
                     .input("nombreYApellido", sql.NVarChar, nombreYApellido)
                     .input("usuario", sql.NVarChar, usuario)
-                    .input("password", sql.NVarChar, bcrypt.hashSync(password, 10))
+                    .input("password", sql.NVarChar, password)
                     .input("email", sql.NVarChar, email)
                     .input("telefono", sql.Int, telefono)
                     .query("UPDATE USUARIOS SET nombreYApellido = @nombreYApellido, usuario = @usuario, password = @password, email = @email, telefono = @telefono, fechaModificacion = getDate() WHERE id = @id")

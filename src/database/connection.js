@@ -4,7 +4,7 @@ const sql = require("mssql")
 const dbConfig = {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    server: process.env.DB_SERVER,
+    server: process.env.DB_SERVER || "localhost",
     database: process.env.DB_NAME,
     options: {
         encrypt: true, // for azure
